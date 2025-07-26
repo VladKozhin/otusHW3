@@ -1,54 +1,41 @@
+import {ExceptionProcessor} from "./src/ExceptionHandler/classes/ExceptionProcessor";
+import {ErrorNameHandler} from "./src/ExceptionHandler/classes/ErrorNameHandler";
+import {LogErrorHandler} from "./src/ExceptionHandler/classes/LogErrorHandler";
+import {RepeatHandler} from "./src/ExceptionHandler/classes/RereatHandler";
+import {Queue} from "./src/ExceptionHandler/classes/Queue";
+import {EnqueueCommandHandler} from "./src/ExceptionHandler/classes/EnqueueCommandHandler";
 
-
-//const rep = new Repeatable(log, 3);
-//rep.repeatCommand()
-
-/*type Command = () => void;
-
-class CommandQueue {
-    private commands: { command: Command; name?: string }[] = [];
-
-    // Добавляем команду в очередь
-    enqueue(command: Command, name?: string) {
-        this.commands.push({ command, name });
-    }
-
-    // Запускаем все команды по очереди
-    async runAll() {
-        for (const { command, name } of this.commands) {
-            try {
-                // Если команда асинхронная, можно использовать await
-                await command();
-            } catch (error) {
-                ExceptionHandler.handle(error, name);
-            }
-        }
-    }
+function errorThrower(){
+    throw "Log me."
+}
+function errorThrower2(){
+    console.log("Second func")
+    throw "Error code: 222!"
+}
+function errorThrower3(){
+    console.log("Third func")
+    throw "Error code: 333!"
 }
 
+const queue = new Queue();
 
-const queue = new CommandQueue();
+const processor = new ExceptionProcessor();
+processor.addHandler(new RepeatHandler(errorThrower, 1));
+processor.addHandler(new LogErrorHandler());
+//processor.addHandler(new EnqueueCommandHandler(queue))
+//processor.addHandler(new LogErrorHandler());
 
-// Добавляем синхронные команды
-queue.enqueue(() => {
-    console.log('Команда 1 выполнена');
-});
 
-queue.enqueue(() => {
-    throw new Error('Ошибка в команде 2');
-}, 'Команда 2');
+queue.enqueue(errorThrower)
+//queue.enqueue(errorThrower2)
+//queue.enqueue(errorThrower3)
+//queue.enqueue(()=>{console.log("И я из очереди!")})
+//queue.runQueue();
 
-queue.enqueue(async () => {
-    // Асинхронная команда
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    console.log('Асинхронная команда 3 выполнена');
-}, 'Команда 3');
-
-queue.enqueue(() => {
-    throw new Error('Ошибка в команде 4');
-}, 'Команда 4');
-
-// Запускаем очередь
-queue.runAll().then(() => {
-    console.log('Все команды выполнены');
-});*/
+while(queue.count() > 0) {
+    try {
+        queue.execute();
+    } catch (error) {
+        processor.process(error, queue.getCurrentFunc);
+    }
+}

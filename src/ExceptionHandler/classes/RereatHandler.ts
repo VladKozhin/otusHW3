@@ -9,13 +9,14 @@ export class RepeatHandler implements IExceptionHandler{
         this.count = count;
     }
 
-    handle(error: any): boolean {
+    handle(error: any, command:()=>void): boolean {
         if (!this.func) {
             return false;
         }
 
         let attempts = 0;
         while (attempts < this.count) {
+            console.log(`Повтор №${attempts+1}...`)
             try {
                 this.func();
                 return true;

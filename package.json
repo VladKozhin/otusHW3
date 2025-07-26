@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -12,7 +12,10 @@
   },
   "private": true,
   "dependencies": {
+    "jest": "^30.0.5",
+    "ts-jest": "^29.4.0",
     "tsc": "^2.0.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@types/jest": "^30.0.0"
   }
 }

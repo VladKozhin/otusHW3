@@ -1,3 +1,3 @@
 export interface IExceptionHandler{
-    handle(error:any):boolean;
+    handle(error:any, command?: ()=>void):boolean;
 }

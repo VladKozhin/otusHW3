@@ -7,7 +7,7 @@ export class ErrorNameHandler implements IExceptionHandler {
         this.name = name;
     }
 
-    handle(error: any): boolean {
+    handle(error: any, command:()=>void): boolean {
         if (error instanceof Error && error.name === this.name) {
             console.log(`Обработка ошибки с именем: "${this.name}"`);
             return true;
